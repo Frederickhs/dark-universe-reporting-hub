@@ -1,0 +1,52 @@
+{
+  "hub": {
+    "name": "Dark Universe Reporting Hub",
+    "log_folder": "Logs",
+    "continue_after_failure": true,
+    "open_outputs_after_run": false
+  },
+  "reports": {
+    "pm_qualification_tracker": {
+      "display_name": "PM Qualification Activity Tracker",
+      "project_folder": "G:\\Dev\\Qual Tracker",
+      "runner": "G:\\Dev\\Qual Tracker\\Run_Qualification_Tracker.bat",
+      "output_folder": "G:\\Dev\\Qual Tracker\\Output",
+      "archive_folder": "G:\\Dev\\Qual Tracker\\Archive",
+      "input_folders": {
+        "Qualification Reports": "G:\\Dev\\Qual Tracker\\Input\\Qualification",
+        "Task Reports": "G:\\Dev\\Qual Tracker\\Input\\Tasks",
+        "Animation Roster": "G:\\Dev\\Qual Tracker\\Input\\Manual roster"
+      }
+    },
+    "qualification_coverage": {
+      "display_name": "Qualification Coverage Report",
+      "project_folder": "G:\\Dev\\Qualification Report",
+      "runner": "G:\\Dev\\Qualification Report\\Run Qualification Report.bat",
+      "output_folder": "G:\\Dev\\Qualification Report\\Output",
+      "archive_folder": "G:\\Dev\\Qualification Report\\Archive",
+      "input_folders": {
+        "Line Schedule": "G:\\Dev\\Qualification Report\\Input\\Line Schedule"
+      }
+    },
+    "pqs_dark_universe": {
+      "display_name": "PQS Dark Universe Report",
+      "project_folder": "G:\\Dev\\PQS Dark Universe Report",
+      "runner": "G:\\Dev\\PQS Dark Universe Report\\Run_PQS_Dark_Universe_Report.bat",
+      "output_folder": "G:\\Dev\\PQS Dark Universe Report\\Output",
+      "archive_folder": "G:\\Dev\\PQS Dark Universe Report\\Archive",
+      "input_folders": {
+        "Operations Maximo Reports": "G:\\Dev\\PQS Dark Universe Report\\Input\\Maximo\\Operations",
+        "Animation Maximo Reports": "G:\\Dev\\PQS Dark Universe Report\\Input\\Maximo\\Animation",
+        "PQS Line Schedule": "G:\\Dev\\PQS Dark Universe Report\\Input\\Line Schedule",
+        "PQS Animation Roster": "G:\\Dev\\PQS Dark Universe Report\\Input\\Rosters",
+        "Supervisor Roster": "G:\\Dev\\PQS Dark Universe Report\\Input\\Supervisors",
+        "PQS Exceptions": "G:\\Dev\\PQS Dark Universe Report\\Input\\Exceptions"
+      }
+    }
+  },
+  "run_order": [
+    "pm_qualification_tracker",
+    "qualification_coverage",
+    "pqs_dark_universe"
+  ]
+}
