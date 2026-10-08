@@ -107,19 +107,37 @@ def run_report(
             check=False,
             timeout=timeout_seconds,
             stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            creationflags=subprocess.CREATE_NO_WINDOW,
         )
 
         duration = time.perf_counter() - start_time
+
+        captured_output = completed_process.stdout.strip()
 
         if completed_process.returncode == 0:
             status = "SUCCESS"
             details = "Report runner completed successfully."
         else:
             status = "FAILED"
+
+            output_lines = captured_output.splitlines()
+            output_tail = "\n".join(output_lines[-15:])
+
             details = (
                 "Report runner returned exit code "
                 f"{completed_process.returncode}."
             )
+
+            if output_tail:
+                details = (
+                    f"{details}\n\n"
+                    f"Report output:\n{output_tail}"
+                )
 
         return ReportResult(
             report_key=report_key,

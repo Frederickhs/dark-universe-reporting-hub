@@ -1,9 +1,19 @@
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
-HUB_ROOT = Path(__file__).resolve().parent.parent
+def get_hub_root() -> Path:
+    """Return the application folder for Python and packaged EXE runs."""
+
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent
+
+    return Path(__file__).resolve().parent.parent
+
+
+HUB_ROOT = get_hub_root()
 CONFIG_FILE = HUB_ROOT / "Config" / "reports.json"
 
 
