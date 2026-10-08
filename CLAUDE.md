@@ -55,12 +55,15 @@ After changing code:
 ## Validation Commands
 
 ```powershell
-python -m json.tool Configeports.json
+python -m json.tool Config
+eports.json
 python Scripts\config_loader.py
-python Scriptsolder_manager.py
+python Scripts\Folder_manager.py
 python Scripts\log_manager.py
-python Scriptseport_runner.py
-python Scriptseporting_hub.py
+python Scripts
+eport_runner.py
+python Scripts
+eporting_hub.py
 ```
 
 ## Data Protection
