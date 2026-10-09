@@ -8,14 +8,14 @@
   "reports": {
     "pm_qualification_tracker": {
       "display_name": "PM Qualification Activity Tracker",
-      "project_folder": "G:\\Dev\\Qual Tracker",
-      "runner": "G:\\Dev\\Qual Tracker\\Run_Qualification_Tracker.bat",
-      "output_folder": "G:\\Dev\\Qual Tracker\\Output",
-      "archive_folder": "G:\\Dev\\Qual Tracker\\Archive",
+      "project_folder": "G:\\Dev\\Qual_Tracker",
+      "runner": "G:\\Dev\\Qual_Tracker\\Run_Qualification_Tracker.bat",
+      "output_folder": "G:\\Dev\\Qual_Tracker\\Output",
+      "archive_folder": "G:\\Dev\\Qual_Tracker\\Archive",
       "input_folders": {
-        "Qualification Reports": "G:\\Dev\\Qual Tracker\\Input\\Qualification",
-        "Task Reports": "G:\\Dev\\Qual Tracker\\Input\\Tasks",
-        "Animation Roster": "G:\\Dev\\Qual Tracker\\Input\\Manual roster"
+        "Qualification Reports": "G:\\Dev\\Qual_Tracker\\Input\\Qualification",
+        "Task Reports": "G:\\Dev\\Qual_Tracker\\Input\\Tasks",
+        "Animation Roster": "G:\\Dev\\Qual_Tracker\\Input\\Manual roster"
       }
     },
     "qualification_coverage": {
@@ -50,3 +50,4 @@
     "pqs_dark_universe"
   ]
 }
+
