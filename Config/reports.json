@@ -42,11 +42,23 @@
         "Supervisor Roster": "G:\\Dev\\PQS Dark Universe Report\\Input\\Supervisors",
         "PQS Exceptions": "G:\\Dev\\PQS Dark Universe Report\\Input\\Exceptions"
       }
+    },
+    "sf_weekly_report": {
+    "display_name": "SF Weekly Report",
+    "project_folder": "G:\\Dev\\SF_Weekly_Report",
+    "runner": "G:\\Dev\\SF_Weekly_Report\\Run_SF_Weekly_Report.bat",
+    "output_folder": "G:\\Dev\\SF_Weekly_Report\\Output",
+    "archive_folder": "G:\\Dev\\SF_Weekly_Report\\Archive",
+    "input_folders": {
+    "SF Report Inputs": "G:\\Dev\\SF_Weekly_Report\\Input",
+    "Line Schedule": "G:\\Dev\\PQS Dark Universe Report\\Input\\Line Schedule"
     }
+}
   },
   "run_order": [
     "pm_qualification_tracker",
     "qualification_coverage",
-    "pqs_dark_universe"
+    "pqs_dark_universe",
+    "sf_weekly_report"
   ]
 }

@@ -20,7 +20,7 @@ from log_manager import (
 from report_runner import ReportResult, run_report
 
 
-APP_WIDTH = 760
+APP_WIDTH = 840
 APP_HEIGHT = 650
 
 COLOR_BACKGROUND = "#F3F3F3"
@@ -38,6 +38,33 @@ COLOR_READY = "#555555"
 
 HUB_ROOT = Path(__file__).resolve().parent.parent
 
+def set_centered_window(
+    window: tk.Tk | tk.Toplevel,
+    width: int,
+    height: int,
+    minimum_width: int = 700,
+    minimum_height: int = 650,
+) -> None:
+    """Set a centered window size without exceeding the screen."""
+
+    window.update_idletasks()
+
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+
+    final_width = min(width, screen_width - 80)
+    final_height = min(height, screen_height - 100)
+
+    x_position = max((screen_width - final_width) // 2, 0)
+    y_position = max((screen_height - final_height) // 2, 0)
+
+    window.geometry(
+        f"{final_width}x{final_height}"
+        f"+{x_position}+{y_position}"
+    )
+
+    window.minsize(minimum_width, minimum_height)
+    window.resizable(True, True)
 
 class ReportingHubApp:
     """Main desktop interface for the Dark Universe Reporting Hub."""
@@ -54,8 +81,14 @@ class ReportingHubApp:
         self.control_buttons: list[tk.Button] = []
 
         self.root.title(self.config["hub"]["name"])
-        self.root.geometry(f"{APP_WIDTH}x{APP_HEIGHT}")
-        self.root.resizable(False, False)
+        set_centered_window(
+        self.root,
+        width=800,
+        height=825,
+        minimum_width=800,
+        minimum_height=825,
+    )
+
         self.root.configure(bg=COLOR_BACKGROUND)
         self.root.protocol("WM_DELETE_WINDOW", self.close_application)
 
@@ -313,17 +346,33 @@ class ReportingHubApp:
         folders: list[dict[str, str]],
         use_button_name: bool,
     ) -> None:
-        """Create a secondary window containing folder shortcuts."""
+        """Create a scrollable window containing folder shortcuts."""
 
         folder_window = tk.Toplevel(self.root)
         folder_window.title(window_title)
-        folder_window.geometry("620x650")
-        folder_window.resizable(False, True)
         folder_window.configure(bg=COLOR_BACKGROUND)
         folder_window.transient(self.root)
 
-        title_label = tk.Label(
+        set_centered_window(
             folder_window,
+            width=650,
+            height=760,
+            minimum_width=600,
+            minimum_height=650,
+        )
+
+        folder_window.lift()
+        folder_window.focus_force()
+
+        # Fixed title area
+        header_frame = tk.Frame(
+            folder_window,
+            bg=COLOR_BACKGROUND,
+        )
+        header_frame.pack(fill="x")
+
+        title_label = tk.Label(
+            header_frame,
             text=window_title,
             font=("Segoe UI", 20, "bold"),
             bg=COLOR_BACKGROUND,
@@ -332,13 +381,132 @@ class ReportingHubApp:
         title_label.pack(pady=(20, 5))
 
         instruction_label = tk.Label(
-            folder_window,
+            header_frame,
             text="Select a folder to open it in File Explorer.",
             font=("Segoe UI", 10),
             bg=COLOR_BACKGROUND,
             fg=COLOR_SECONDARY_TEXT,
         )
-        instruction_label.pack(pady=(0, 14))
+        instruction_label.pack(pady=(0, 12))
+
+        # Scrollable middle area
+        scroll_container = tk.Frame(
+            folder_window,
+            bg=COLOR_BACKGROUND,
+        )
+        scroll_container.pack(
+            fill="both",
+            expand=True,
+            padx=(20, 10),
+        )
+
+        canvas = tk.Canvas(
+            scroll_container,
+            bg=COLOR_BACKGROUND,
+            highlightthickness=0,
+        )
+        canvas.pack(
+            side="left",
+            fill="both",
+            expand=True,
+        )
+
+        scrollbar = ttk.Scrollbar(
+            scroll_container,
+            orient="vertical",
+            command=canvas.yview,
+        )
+        scrollbar.pack(
+            side="right",
+            fill="y",
+        )
+
+        canvas.configure(
+            yscrollcommand=scrollbar.set,
+        )
+
+        content_frame = tk.Frame(
+            canvas,
+            bg=COLOR_BACKGROUND,
+        )
+
+        canvas_window = canvas.create_window(
+            (0, 0),
+            window=content_frame,
+            anchor="nw",
+        )
+
+        def update_scroll_region(event=None) -> None:
+            """Update scrolling and show the scrollbar only when needed."""
+
+            canvas.update_idletasks()
+
+            content_box = canvas.bbox("all")
+
+            if content_box is None:
+                return
+
+            canvas.configure(scrollregion=content_box)
+
+            content_height = content_box[3] - content_box[1]
+            visible_height = canvas.winfo_height()
+
+            if content_height > visible_height:
+                if not scrollbar.winfo_ismapped():
+                    scrollbar.pack(
+                        side="right",
+                        fill="y",
+                    )
+            else:
+                if scrollbar.winfo_ismapped():
+                    scrollbar.pack_forget()
+
+                canvas.yview_moveto(0)
+
+        def resize_content_frame(event) -> None:
+            """Keep the content centered across the canvas width."""
+
+            canvas.itemconfigure(
+                canvas_window,
+                width=event.width,
+            )
+
+        def scroll_with_mouse(event) -> None:
+            """Scroll only when the folder content exceeds the window."""
+
+            content_box = canvas.bbox("all")
+
+            if content_box is None:
+                return
+
+            content_height = content_box[3] - content_box[1]
+            visible_height = canvas.winfo_height()
+
+            if content_height > visible_height:
+                canvas.yview_scroll(
+                    int(-1 * (event.delta / 120)),
+                    "units",
+                )
+
+        content_frame.bind(
+            "<Configure>",
+            update_scroll_region,
+        )
+
+        canvas.bind(
+            "<Configure>",
+            resize_content_frame,
+        )
+
+        folder_window.bind(
+            "<Configure>",
+            update_scroll_region,
+        )
+
+        canvas.bind_all(
+            "<MouseWheel>",
+            scroll_with_mouse,
+        )
 
         current_report_name = None
 
@@ -349,13 +517,15 @@ class ReportingHubApp:
                 current_report_name = report_name
 
                 section_label = tk.Label(
-                    folder_window,
+                    content_frame,
                     text=report_name,
                     font=("Segoe UI", 11, "bold"),
                     bg=COLOR_BACKGROUND,
                     fg=COLOR_TEXT,
                 )
-                section_label.pack(pady=(12, 5))
+                section_label.pack(
+                    pady=(14, 6),
+                )
 
             if use_button_name:
                 button_name = folder_info["button_name"]
@@ -365,13 +535,13 @@ class ReportingHubApp:
             folder_path = folder_info["folder_path"]
 
             button = tk.Button(
-                folder_window,
+                content_frame,
                 text=button_name,
                 command=lambda name=button_name, path=folder_path: (
                     self.open_configured_folder(name, path)
                 ),
                 font=("Segoe UI", 10),
-                width=42,
+                width=48,
                 height=2,
                 bg=COLOR_CARD,
                 fg=COLOR_TEXT,
@@ -379,16 +549,36 @@ class ReportingHubApp:
                 relief="groove",
                 cursor="hand2",
             )
-            button.pack(pady=3)
+            button.pack(pady=4)
+
+        # Fixed bottom area
+        bottom_frame = tk.Frame(
+            folder_window,
+            bg=COLOR_BACKGROUND,
+        )
+        bottom_frame.pack(fill="x")
+
+        def close_folder_window() -> None:
+            """Remove the mouse-wheel binding and close the window."""
+
+            canvas.unbind_all("<MouseWheel>")
+            folder_window.destroy()
 
         close_button = tk.Button(
-            folder_window,
+            bottom_frame,
             text="Close",
-            command=folder_window.destroy,
+            command=close_folder_window,
             font=("Segoe UI", 10),
             width=16,
         )
-        close_button.pack(pady=20)
+        close_button.pack(pady=14)
+
+        folder_window.protocol(
+            "WM_DELETE_WINDOW",
+            close_folder_window,
+        )
+
+        update_scroll_region()
 
     def open_configured_folder(
         self,
